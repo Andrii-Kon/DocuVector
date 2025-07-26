@@ -1,20 +1,23 @@
 # DocuVector: PDF to SVG Converter
 
-A Django web application that asynchronously converts vector-based PDF files to high-quality SVG using Celery and Redis. This project demonstrates a full-stack development cycle, from initial setup to production deployment.
+A Django web application that asynchronously converts vector-based PDF files to high-quality SVG using Celery and Redis. This project demonstrates a full-stack development cycle, from initial setup and local development to production deployment on a cloud platform.
 
-**Live Demo:** []() 
+**Live Demo:** [https://docuvector.onrender.com/](https://docuvector.onrender.com/)
 
-![DocuVector Screenshot]() 
+*(**Note:** The initial load might take up to a minute as the free instance on Render spins up from sleep. Additionally, due to free tier limitations, the background worker is not active in this live demo. The file conversion will remain in the 'Processing' state. However, the application is fully configured for asynchronous task processing, as can be seen in the source code.)*
+
+![DocuVector Screenshot](link_to_your_screenshot.png) 
+<!-- ЗАМІНІТЬ ЦЕ ПОСИЛАННЯ ПІСЛЯ ЗАВАНТАЖЕННЯ СКРІНШОТУ -->
 
 ---
 
 ## Key Features
 
-- **File Upload:** A user-friendly interface for uploading PDF documents.
-- **Asynchronous Conversion:** Heavy processing tasks are handled in the background by Celery workers, ensuring the UI remains responsive.
+- **File Upload:** A clean, user-friendly interface for uploading PDF documents.
+- **Asynchronous Architecture:** Heavy processing tasks are designed to be handled by Celery workers, ensuring the UI remains responsive even with large files.
 - **Real-time Status Updates:** The frontend uses AJAX polling to dynamically update the conversion status without requiring a page refresh.
 - **High-Quality Conversion:** Utilizes the `PyMuPDF` library to ensure accurate extraction of vector data and text from PDFs.
-- **Production-Ready Setup:** The project is configured for deployment with Gunicorn, WhiteNoise, and environment variables for security.
+- **Production-Ready Setup:** The project is configured for deployment with Gunicorn, WhiteNoise, PostgreSQL, and environment variables for security.
 
 ---
 
@@ -23,7 +26,7 @@ A Django web application that asynchronously converts vector-based PDF files to 
 - **Backend:** Python, Django
 - **Frontend:** HTML5, CSS3 (Pico.css), JavaScript (AJAX/Fetch API)
 - **Task Queue:** Celery
-- **Message Broker:** Redis
+- **Message Broker & Cache:** Redis
 - **Database:** PostgreSQL (in production), SQLite (in development)
 - **Deployment:** Render, Gunicorn, WhiteNoise
 
@@ -62,7 +65,7 @@ To run this project locally, follow these steps:
     REDIS_URL='redis://localhost:6379/0'
     ```
 
-5.  **Run Redis.** Make sure you have a Redis server running on `localhost:6379`. You can use Docker or a local installation.
+5.  **Run Redis.** Make sure you have a Redis server running on `localhost:6379`.
 
 6.  **Apply database migrations:**
     ```bash

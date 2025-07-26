@@ -1,0 +1,150 @@
+<!-- converter/templates/converter/document_upload.html -->
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuVector - PDF to SVG Converter</title>
+
+    <!-- 1. Pico.css for base styling and dark theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+    <!-- 2. Custom style overrides for a more compact layout -->
+    <style>
+        :root {
+            --font-size: 15px;
+            --block-spacing-vertical: 1.25rem;
+        }
+        body > main.container {
+            padding: 2rem 1rem;
+        }
+        h1 {
+            --font-size: 2.25rem;
+        }
+        article {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        table th, table td {
+            padding: 0.6rem 0.75rem;
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+
+    <header>
+        <h1>DocuVector</h1>
+        <p>Upload a vector-based PDF to convert it to a high-quality SVG file.</p>
+    </header>
+
+    <article>
+        <header>
+            <h2>Upload New Document</h2>
+        </header>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload and Process</button>
+        </form>
+    </article>
+
+    <article>
+        <header>
+            <h2>Uploaded Documents</h2>
+        </header>
+        <figure>
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Source PDF</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Uploaded At</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for doc in documents %}
+                {% if doc.status == 'PROCESSING' or doc.status == 'PENDING' %}
+                <tr data-doc-id="{{ doc.id }}">
+                    {% else %}
+                <tr>
+                    {% endif %}
+                    <td>{{ doc.title }}</td>
+                    <td><a href="{{ doc.source_pdf.url }}" target="_blank" rel="noopener noreferrer">{{ doc.get_source_filename }}</a></td>
+                    <td class="status-cell">
+                        {% if doc.status == 'COMPLETED' %}
+                        <span style="color: var(--pico-color-green-500);">{{ doc.get_status_display }}</span>
+                        {% elif doc.status == 'FAILED' %}
+                        <span style="color: var(--pico-color-red-500);">{{ doc.get_status_display }}</span>
+                        {% else %}
+                        <span>{{ doc.get_status_display }}...</span>
+                        {% endif %}
+                    </td>
+                    <td class="result-cell">
+                        {% if doc.result_svg %}
+                        <a href="{{ doc.result_svg.url }}" target="_blank" rel="noopener noreferrer">View SVG</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>{{ doc.uploaded_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No documents have been uploaded.</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </figure>
+    </article>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find all table rows that require status polling via the 'data-doc-id' attribute.
+        const rowsToPoll = document.querySelectorAll('tr[data-doc-id]');
+
+        rowsToPoll.forEach(row => {
+            const docId = row.dataset.docId;
+            const statusCell = row.querySelector('.status-cell');
+            const resultCell = row.querySelector('.result-cell');
+
+            // Poll the status endpoint until a terminal state (COMPLETED/FAILED) is reached.
+            const poll = setInterval(() => {
+                fetch(`/status/${docId}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status_code === 'COMPLETED' || data.status_code === 'FAILED') {
+                            clearInterval(poll); // Stop polling for this document.
+
+                            // Update the UI with the final status and result.
+                            const statusColor = data.status_code === 'COMPLETED' ? 'var(--pico-color-green-500)' : 'var(--pico-color-red-500)';
+                            statusCell.innerHTML = `<span style="color: ${statusColor};">${data.status}</span>`;
+
+                            if (data.result_url) {
+                                resultCell.innerHTML = `<a href="${data.result_url}" target="_blank" rel="noopener noreferrer">View SVG</a>`;
+                            } else {
+                                resultCell.innerHTML = '-';
+                            }
+                            row.removeAttribute('data-doc-id');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error polling status for doc ID ' + docId + ':', error);
+                        clearInterval(poll); // Stop polling on any network or server error.
+                    });
+            }, 2500); // Poll interval: 2.5 seconds.
+        });
+    });
+</script>
+</body>
+</html>

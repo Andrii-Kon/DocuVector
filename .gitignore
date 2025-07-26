@@ -1,0 +1,11 @@
+# Environment variables
+.env
+
+# Django stuff
+db.sqlite3
+/media/
+__pycache__/
+*.pyc
+
+# IDE stuff
+.idea/

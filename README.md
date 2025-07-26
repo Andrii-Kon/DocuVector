@@ -8,7 +8,7 @@ A Django web application that asynchronously converts vector-based PDF files to 
 
 ---
 
-<img width="1441" height="842" alt="image" src="https://github.com/user-attachments/assets/18164f85-1072-46b5-8bb5-b782ea414ec7" />
+![Анімація](https://github.com/user-attachments/assets/e4cc410d-edda-4e44-8ed9-a72a1d5fffd7)
 
 ---
 

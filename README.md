@@ -2,8 +2,7 @@
 
 A Django web application that asynchronously converts vector-based PDF files to high-quality SVG using Celery and Redis. This project demonstrates a full-stack development cycle, from initial setup to production deployment.
 
-**Live Demo:** [https://your-app-name.onrender.com](https://your-app-name.onrender.com) 
-*(Note: The initial load might take up to a minute as the free instance on Render spins up from sleep.)*
+**Live Demo:** []() 
 
 ![DocuVector Screenshot]() 
 

@@ -6,7 +6,9 @@ A Django web application that asynchronously converts vector-based PDF files to 
 
 *(**Note:** The initial load might take up to a minute as the free instance on Render spins up from sleep. Additionally, due to free tier limitations, the background worker is not active in this live demo. The file conversion will remain in the 'Processing' state. However, the application is fully configured for asynchronous task processing, as can be seen in the source code.)*
 
-![DocuVector Screenshot](<img width="1522" height="861" alt="image" src="https://github.com/user-attachments/assets/b38f5e6b-c017-462a-9564-eedebcd0ed7c" />) 
+---
+
+<img width="1441" height="842" alt="image" src="https://github.com/user-attachments/assets/18164f85-1072-46b5-8bb5-b782ea414ec7" />
 
 ---
 
